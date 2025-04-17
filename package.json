@@ -8,9 +8,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satvikbhupalam16/quick-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/satvikbhupalam16/quick-chat/issues"
+  },
+  "homepage": "https://github.com/satvikbhupalam16/quick-chat#readme",
+  "description": ""
 }
