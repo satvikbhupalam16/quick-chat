@@ -1,4 +1,9 @@
 const socket = io();
+
+console.log('Connecting to socket...');
+socket.on('connect', () => console.log('✅ Socket connected!'));
+
+
 let userName = '';
 let messageMap = {};
 
@@ -30,6 +35,7 @@ function setName() {
     alert("Please enter your name.");
     return;
   }
+  console.log('Submitting name:', userName);
   socket.emit('set name', { name: userName });
   document.getElementById('name-container').style.display = 'none';
   document.getElementById('chat').style.display = 'flex';
