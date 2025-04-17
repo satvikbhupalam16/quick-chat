@@ -9,6 +9,11 @@
 </head>
 <body>
 
+  <div id="terminal-login">
+    <div class="terminal-line">login: <input type="text" id="terminal-username" autofocus></div>
+    <div class="terminal-line password-line" style="display: none;">password: <input type="password" id="terminal-password"></div>
+  </div>
+
   <div id="auth-container">
     <h2>Enter Secret Code</h2>
     <input type="text" id="secret-code" placeholder="Enter secret code" />
@@ -57,6 +62,30 @@
       document.getElementById('name-container').style.display = 'none';
       document.getElementById('chat').style.display = 'flex';
     }
+
+    
+      document.getElementById("terminal-username").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      document.querySelector(".password-line").style.display = "block";
+      document.getElementById("terminal-password").focus();
+    }
+  });
+
+  document.getElementById("terminal-password").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      const user = document.getElementById("terminal-username").value.trim();
+      const pass = document.getElementById("terminal-password").value.trim();
+
+      // Simple validation (replace with your own)
+      if (user === "admin" && pass === "pass123") {
+        document.getElementById("terminal-login").style.display = "none";
+        document.getElementById("chat").style.display = "flex";
+      } else {
+        alert("Login failed. Try again.");
+        location.reload();
+      }
+    }
+  });
 
     document.getElementById('send-btn').addEventListener('click', () => {
       const msgInput = document.getElementById('message');

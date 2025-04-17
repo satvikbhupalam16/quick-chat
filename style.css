@@ -213,6 +213,30 @@ button:hover {
   background-color: #128c7e;
 }
 
+#terminal-login {
+  background-color: #000;
+  color: #33ff33;
+  font-family: 'Courier New', Courier, monospace;
+  height: 100vh;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.terminal-line {
+  margin-bottom: 10px;
+}
+
+#terminal-login input {
+  background: transparent;
+  border: none;
+  color: #33ff33;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  width: 200px;
+}
+
+
 /* Responsive tweaks */
 @media (max-width: 600px) {
   #chat,
@@ -226,3 +250,4 @@ button:hover {
     width: 95%;
   }
 }
+
