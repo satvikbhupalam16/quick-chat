@@ -1,5 +1,3 @@
-const PORT = process.env.PORT || 3000;
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
