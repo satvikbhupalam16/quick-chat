@@ -6,10 +6,19 @@
   <title>Quick Chat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
+<script>
+  // Redirect if not coming from homepage
+  if (document.referrer === '' || !document.referrer.includes('/')) {
+    window.location.href = '/';
+  }
+</script>
+
+
 <body>
 
   <div id="auth-container">
-    <h2>Enter Secret Code</h2>
+    <h2>Enter Company Code</h2>
     <input type="text" id="secret-code" placeholder="Enter secret code" />
     <button id="submit-code">Submit</button>
   </div>
@@ -26,8 +35,7 @@
       <input type="text" id="message" placeholder="Type a message 😊" autocomplete="off">
       <button id="send-btn" title="Send">&#10148;</button>
       <button id="clear-btn" title="Clear">&#128465;</button>
-      <button id="back" title="back" onclick="https://quick-chat-fumk.onrender.com/">Back</button>
-      <a href="https://quick-chat-fumk.onrender.com/" class="Back_Btn">Back</a>
+      <button id="back-btn" title="Clear">Back</button>
     </div>
   </div>
 

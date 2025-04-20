@@ -236,10 +236,16 @@ button:hover {
   width: 200px;
 }
 
-.back{
-  font-size: 10px;
-  font-family: Arial;
-  color: blue;
+#Back_Btn{
+    background-color: #25d366;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 /* Responsive tweaks */

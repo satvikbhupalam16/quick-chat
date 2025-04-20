@@ -39,6 +39,11 @@ document.getElementById('clear-btn').addEventListener('click', () => {
   document.getElementById('messages').innerHTML = '';
 });
 
+// === Back to Home ===
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.location.href = 'https://quick-chat-fumk.onrender.com/';
+});
+
 // === Add Message to DOM ===
 function addMessageToDOM(data) {
   const isUser = data.sender === userName;
