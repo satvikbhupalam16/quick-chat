@@ -1,105 +1,71 @@
 const socket = io();
-
-console.log('Connecting to socket...');
-socket.on('connect', () => console.log('✅ Socket connected!'));
-
-
 let userName = '';
-let messageMap = {};
 
-window.onload = function () {
-  document.getElementById('submit-code').addEventListener('click', checkSecretCode);
-  document.getElementById('submit-name').addEventListener('click', setName);
-  document.getElementById('send-btn').addEventListener('click', sendMessage);
-  document.getElementById('clear-btn').addEventListener('click', () => {
-    document.getElementById('messages').innerHTML = '';
-  });
-  document.getElementById('message').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendMessage();
-  });
-};
-
-function checkSecretCode() {
+// === Secret Code Flow ===
+document.getElementById('submit-code').addEventListener('click', () => {
   const secretCode = document.getElementById('secret-code').value.trim();
   if (secretCode === "RSS") {
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('name-container').style.display = 'block';
   } else {
-    alert("Incorrect secret code. Please try again.");
+    alert("Incorrect secret code. Try again.");
   }
-}
+});
 
-function setName() {
-  userName = document.getElementById('name').value.trim();
-  if (!userName) {
-    alert("Please enter your name.");
-    return;
+// === Set User Name ===
+document.getElementById('submit-name').addEventListener('click', () => {
+  const name = document.getElementById('name').value.trim();
+  if (name) {
+    userName = name;
+    socket.emit('set name', { name });
+    document.getElementById('name-container').style.display = 'none';
+    document.getElementById('chat').style.display = 'flex';
   }
-  console.log('Submitting name:', userName);
-  socket.emit('set name', { name: userName });
-  document.getElementById('name-container').style.display = 'none';
-  document.getElementById('chat').style.display = 'flex';
-}
+});
 
-function sendMessage() {
+// === Send Message ===
+document.getElementById('send-btn').addEventListener('click', () => {
   const msgInput = document.getElementById('message');
   const msg = msgInput.value.trim();
   if (msg) {
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const messageId = Date.now().toString() + Math.random().toString(36).substring(2);
-    const messageData = { id: messageId, sender: userName, msg, time: timestamp, status: 'sent' };
-    socket.emit('chat message', messageData);
-    renderMessage(messageData, true);
-    messageMap[messageId] = messageData;
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    socket.emit('chat message', { sender: userName, msg, time });
     msgInput.value = '';
   }
-}
+});
 
-function renderMessage(data, isSelf) {
-  const messageElement = document.createElement('div');
-  messageElement.classList.add('message', data.sender === userName ? 'user' : 'friend');
-  messageElement.setAttribute('id', data.id);
+// === Clear Chat ===
+document.getElementById('clear-btn').addEventListener('click', () => {
+  document.getElementById('messages').innerHTML = '';
+});
 
-  const tickHTML = isSelf
-    ? `<span class="status ${data.status}">${getStatusTick(data.status)}</span>`
-    : '';
+// === Add Message to DOM ===
+function addMessageToDOM(data) {
+  const isUser = data.sender === userName;
+  const message = document.createElement('div');
+  message.classList.add('message', isUser ? 'user' : 'friend');
 
-  messageElement.innerHTML = `
-    <strong>${data.sender}:</strong> ${data.msg}
-    <div class="timestamp">${data.time} ${tickHTML}</div>
+  const timeDisplay = `
+    <div class="timestamp">
+      ${data.time}
+    </div>`;
+
+  message.innerHTML = `
+    ${!isUser ? `<strong>${data.sender}:</strong>` : ''}
+    ${data.msg}
+    ${timeDisplay}
   `;
-  document.getElementById('messages').prepend(messageElement);
+
+  document.getElementById('messages').appendChild(message);
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 }
 
-function getStatusTick(status) {
-  switch (status) {
-    case 'sent': return '✔';
-    case 'delivered': return '✔✔';
-    case 'seen': return '<span style="color:#25d366;">✔✔</span>';
-    default: return '';
-  }
-}
+// === Receive Message History ===
+socket.on('chat history', (messages) => {
+  messages.forEach(data => addMessageToDOM(data));
+});
 
+// === Receive Live Messages ===
 socket.on('chat message', (data) => {
-  if (data.sender === userName) return;
-  renderMessage(data, false);
-  socket.emit('message delivered', { id: data.id, sender: data.sender });
-});
-
-socket.on('update status', (data) => {
-  const msgEl = document.getElementById(data.id);
-  if (msgEl && messageMap[data.id]) {
-    messageMap[data.id].status = data.status;
-    const timestamp = msgEl.querySelector('.timestamp');
-    timestamp.innerHTML = messageMap[data.id].time + ' <span class="status ' + data.status + '">' + getStatusTick(data.status) + '</span>';
-  }
-});
-
-window.addEventListener('focus', () => {
-  Object.keys(messageMap).forEach(id => {
-    const msg = messageMap[id];
-    if (msg.sender !== userName && msg.status !== 'seen') {
-      socket.emit('message seen', { id: id, sender: msg.sender });
-    }
-  });
+  addMessageToDOM(data);
 });
