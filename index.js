@@ -7,9 +7,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
+// Serve static files
+app.use(express.static(__dirname));
 
+// Route: Home page (custom SF login)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'SF_Home_Page.html'));
+});
+
+// Route: Chat flow (secret code → name → chat)
+app.get('/chat', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Handle socket communication
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -41,5 +52,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
