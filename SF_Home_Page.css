@@ -8,6 +8,7 @@ body {
   align-items: center;
   height: 100vh;
   zoom: 130%;
+
 }
 
 /* Container for login box */
@@ -84,7 +85,7 @@ input[type="password"] {
 
 /* Help icon style (User Name) */
 .help-icon {
-  color: #b30000;
+  color: #000000;
 }
 
 /* Eye icon style (Password) */
