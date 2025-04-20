@@ -7,25 +7,29 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files
-app.use(express.static(__dirname));
+// Serve static assets only (not full HTML pages)
+app.use('/assets', express.static(path.join(__dirname, 'assets'))); // optional if you have images/css/js folders
 
-// Route: Home page (custom SF login)
+// Serve CSS and JS manually
+app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
+app.use('/SF_Home_Page.css', express.static(path.join(__dirname, 'SF_Home_Page.css')));
+app.use('/client.js', express.static(path.join(__dirname, 'client.js')));
+
+// Home page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'SF_Home_Page.html'));
 });
 
-// Route: Chat flow (secret code → name → chat)
+// Chat page
 app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Handle socket communication
+// Socket logic
 io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('set name', (data) => {
-    console.log('User name set:', data.name);
     socket.username = data.name;
     socket.emit('name set', { name: data.name });
   });
@@ -33,11 +37,6 @@ io.on('connection', (socket) => {
   socket.on('chat message', (data) => {
     data.status = 'sent';
     io.emit('chat message', data);
-  });
-
-  socket.on('message delivered', (data) => {
-    data.status = 'delivered';
-    io.emit('update status', data);
   });
 
   socket.on('message seen', (data) => {
