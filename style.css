@@ -73,7 +73,7 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 8px;
   display: flex;
-  /*flex-direction: column-reverse;*/
+  flex-direction: column-reverse;
 }
 
 /* Individual message styles */
@@ -236,6 +236,11 @@ button:hover {
   width: 200px;
 }
 
+.back{
+  font-size: 10px;
+  font-family: Arial;
+  color: blue;
+}
 
 /* Responsive tweaks */
 @media (max-width: 600px) {
