@@ -12,7 +12,7 @@ body {
 }
 
 /* General container styles */
-#auth-container,
+/*#auth-container,*/
 #name-container,
 #chat {
   max-width: 600px;
@@ -25,6 +25,53 @@ body {
   flex-direction: column;
   gap: 10px;
 }
+
+#auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 360px;
+  width: 100%;
+  padding: 40px 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+#auth-container img {
+  width: 220px;
+  margin-bottom: 20px;
+}
+
+#auth-container input[type="password"] {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+#auth-container button {
+  background-color: #0070d2;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#auth-container button:hover {
+  background-color: #005bb5;
+}
+
+
 
 /* Form elements */
 input[type="text"] {
