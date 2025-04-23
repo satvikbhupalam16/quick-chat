@@ -311,6 +311,28 @@ button:hover {
   background-color: #128c7e;
 }
 
+/* Online and offline status styles */
+.status.online {
+  color: #25d366; /* Green for online */
+}
+
+.status.offline {
+  color: #ccc; /* Gray for offline */
+}
+
+.online-icon {
+  color: #25d366;
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.offline-icon {
+  color: #ccc;
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+
 /* Responsive tweaks */
 @media (max-width: 600px) {
   #chat,
