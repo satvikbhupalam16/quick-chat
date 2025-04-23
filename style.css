@@ -83,6 +83,11 @@ button:hover {
   color: white;
 }
 
+.chat-controls {
+  display: flex;
+  gap: 10px;
+}
+
 .messages-area {
   flex: 1;
   padding: 20px;
