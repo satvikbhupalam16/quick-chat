@@ -7,6 +7,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+const chatHistory = [];
+const onlineUsers = {};
+
 // Serve static files
 app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
 app.use('/SF_Home_Page.css', express.static(path.join(__dirname, 'SF_Home_Page.css')));
@@ -21,9 +24,6 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 🔁 In-memory chat history
-const chatHistory = [];
-
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -32,15 +32,15 @@ io.on('connection', (socket) => {
 
   socket.on('set name', (data) => {
     socket.username = data.name;
+    onlineUsers[socket.username] = socket.id;
+
     socket.emit('name set', { name: data.name });
+    io.emit('userStatus', { user: data.name, status: 'online' });
   });
 
   socket.on('chat message', (data) => {
     data.status = 'sent';
-
-    // Save message in history
     chatHistory.push(data);
-
     io.emit('chat message', data);
   });
 
@@ -49,7 +49,19 @@ io.on('connection', (socket) => {
     io.emit('update status', data);
   });
 
+  socket.on('typing', (user) => {
+    socket.broadcast.emit('typing', user);
+  });
+
+  socket.on('stopTyping', (user) => {
+    socket.broadcast.emit('stopTyping', user);
+  });
+
   socket.on('disconnect', () => {
+    if (socket.username) {
+      delete onlineUsers[socket.username];
+      io.emit('userStatus', { user: socket.username, status: 'offline' });
+    }
     console.log('A user disconnected');
   });
 });
