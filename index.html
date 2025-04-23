@@ -16,37 +16,41 @@
   }
 </script>
 
-
 <body>
 
+  <!-- Secret Code -->
   <div id="auth-container">
     <img src="https://hcm44.sapsf.com/ui/login/img/logos/SF_Logo_Lg-BlueYellow_cd603e40372dc61e1a3203336e03f73d.png">
     <input type="password" id="secret-code" placeholder="Enter Company Id" />
     <button id="submit-code">Submit</button>
   </div>
 
+  <!-- Name -->
   <div id="name-container" style="display:none;">
     <h2>Enter Your Name</h2>
     <input type="text" id="name" placeholder="Enter your name" />
     <button id="submit-name">Submit Name</button>
   </div>
 
+  <!-- Chat -->
   <div id="chat" style="display:none;">
     <div class="chat-top-controls">
+      <!-- Online Status Dot -->
+      <span id="status-dot" class="offline" title="User Status"></span>
+
       <button id="goto-call" title="Call"><i class="fa fa-phone"></i></button>
       <button id="clear-btn" title="Clear"><i class="fa fa-trash-o"></i></button>
       <button id="back-btn" title="Back"><i class="fa fa-chevron-left"></i></button>
     </div>
+
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" style="display: none; margin: 5px 10px; font-style: italic; color: gray;"></div>
+
     <div id="messages"></div>
+
     <div class="input-area">
       <input type="text" id="message" placeholder="Message" autocomplete="off">
       <button id="send-btn" title="Send"><i class="fa fa-send-o"></i></button>
-<!--
-      <button id="clear-btn" title="Clear"><i class="fa fa-trash-o"></i></button>
-      <button id="back-btn" title="Clear"><i class="fa fa-chevron-left"></i></button>
-      <button id="goto-call" title="Call"><i class='fa fa-phone'></i></button> 
-S-->
-
     </div>
   </div>
 
@@ -54,7 +58,6 @@ S-->
   <script src="client.js"></script>
   <script src="call.js"></script>
   <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
-
 
 </body>
 </html>
