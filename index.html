@@ -2,43 +2,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modern Chat App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick Chat - Modern</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-container">
-    <!-- Sidebar for future navigation -->
-    <aside class="sidebar">
-      <h2>QuickChat</h2>
-      <ul class="nav">
-        <li><a href="#">Chats</a></li>
-        <li><a href="#">Contacts</a></li>
-        <li><a href="#">Settings</a></li>
-      </ul>
-    </aside>
 
-    <!-- Main Chat Area -->
-    <main class="chat-container">
-      <!-- Header -->
-      <header class="chat-header">
-        <h3 id="chat-title">Chat Room</h3>
-        <div id="user-status-container"></div>
-      </header>
-
-      <!-- Chat Messages -->
-      <div id="messages" class="messages-area"></div>
-      <div id="typing-indicator" class="typing-indicator"></div>
-
-      <!-- Input Area -->
-      <div class="input-area">
-        <input type="text" id="message" placeholder="Type a message..." autocomplete="off">
-        <button id="send-btn"><i class="fa fa-paper-plane"></i></button>
-      </div>
-    </main>
+  <!-- Auth Flow -->
+  <div id="auth-container" class="card centered-box">
+    <img src="https://hcm44.sapsf.com/ui/login/img/logos/SF_Logo_Lg-BlueYellow_cd603e40372dc61e1a3203336e03f73d.png">
+    <input type="password" id="secret-code" placeholder="Enter Company Id" />
+    <button id="submit-code">Submit</button>
   </div>
+
+  <div id="name-container" class="card centered-box" style="display:none;">
+    <h2>Enter Your Name</h2>
+    <input type="text" id="name" placeholder="Enter your name" />
+    <button id="submit-name">Submit Name</button>
+  </div>
+
+  <!-- Chat Interface -->
+  <div id="chat" class="chat-container" style="display:none;">
+    <div class="chat-header">
+      <h3>QuickChat</h3>
+      <div class="chat-controls">
+        <div id="user-status-container"></div>
+        <button id="goto-call" title="Call"><i class="fa fa-phone"></i></button>
+        <button id="clear-btn" title="Clear"><i class="fa fa-trash-o"></i></button>
+        <button id="back-btn" title="Back"><i class="fa fa-chevron-left"></i></button>
+      </div>
+    </div>
+
+    <div id="typing-indicator" class="typing-indicator"></div>
+    <div id="messages" class="messages-area"></div>
+
+    <div class="input-area">
+      <input type="text" id="message" placeholder="Message" autocomplete="off">
+      <button id="send-btn" title="Send"><i class="fa fa-send-o"></i></button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>
 </body>
 </html>
