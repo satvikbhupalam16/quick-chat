@@ -1,9 +1,8 @@
-
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  background: #121212;
+  color: #e0e0e0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,10 +10,10 @@ body {
 }
 
 .card {
-  background: white;
+  background: #1e1e1e;
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
   text-align: center;
 }
 
@@ -33,18 +32,20 @@ input, button {
 }
 
 input {
-  border: 1px solid #ccc;
+  background: #2c2c2c;
+  border: 1px solid #555;
+  color: #e0e0e0;
 }
 
 button {
-  background: #0070d2;
+  background: #1a73e8;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 button:hover {
-  background: #005bb5;
+  background: #155ab6;
 }
 
 .chat-container {
@@ -53,14 +54,13 @@ button:hover {
   height: 100vh;
   max-width: 700px;
   width: 100%;
-  /*border-radius: 16px;*/
   overflow: hidden;
-  background: white;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  background: #1e1e1e;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
 }
 
 .chat-header {
-  background: #0070d2;
+  background: #1a73e8;
   color: white;
   padding: 16px 20px;
   display: flex;
@@ -69,7 +69,7 @@ button:hover {
 }
 
 .chat-controls button {
-  background: #005bb5;
+  background: #155ab6;
   margin-left: 10px;
   border-radius: 50%;
   width: 40px;
@@ -94,8 +94,10 @@ button:hover {
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
-  background-image: url(https://www.toptal.com/designers/subtlepatterns/uploads/symphony.png);
+  background: #121212;
+  background-image: none;
 }
+
 .message {
   max-width: 70%;
   padding: 12px 16px;
@@ -105,39 +107,43 @@ button:hover {
 }
 
 .user {
-  background-color: #9dd1ff;
+  background-color: #1a73e8;
   align-self: flex-end;
   border-top-right-radius: 0;
+  color: #fff;
 }
 
 .friend {
-  background-color: #f0f0f0;
+  background-color: #333;
   align-self: flex-start;
   border-top-left-radius: 0;
+  color: #e0e0e0;
 }
 
 .timestamp {
   font-size: 0.8rem;
-  color: #888;
+  color: #aaa;
   margin-top: 6px;
 }
 
 .typing-indicator {
   font-style: italic;
   padding: 4px 20px;
-  color: #888;
+  color: #aaa;
 }
 
 .input-area {
   display: flex;
   padding: 16px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #333;
   gap: 10px;
 }
 
 .input-area input {
   flex: 1;
-  border: 1px solid #ccc;
+  border: 1px solid #555;
+  background: #2c2c2c;
+  color: #e0e0e0;
 }
 
 .input-area button {
