@@ -13,8 +13,8 @@ document.getElementById('submit-code').addEventListener('click', () => {
 });
 
 const allowedUsers = {
-  "User_M": "Rss@1234567890",
-  "User_S": "Rss@1234567890"
+  "Pig": "Pig@143",
+  "Dog": "Dog@143"
 };
 
 // === Login Validation (Username + Password) ===
