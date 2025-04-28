@@ -19,10 +19,19 @@
   </div>
 
   <div id="name-container" class="card centered-box" style="display:none;">
-    <h2>Enter Your Name</h2>
-    <input type="text" id="name" placeholder="Enter your name" />
-    <button id="submit-name">Submit Name</button>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter Username" />
+  
+    <div style="position:relative;">
+      <input type="password" id="password" placeholder="Enter Password" style="padding-right: 40px;">
+      <span id="toggle-password" style="position:absolute; top:50%; right:10px; transform:translateY(-50%); cursor:pointer;">
+        <i class="fa fa-eye-slash"></i>
+      </span>
+    </div>
+  
+    <button id="submit-login">Login</button>
   </div>
+  
 
   <!-- Chat Interface -->
   <div id="chat" class="chat-container" style="display:none;">
