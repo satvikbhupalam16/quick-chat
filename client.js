@@ -111,12 +111,20 @@ socket.on('stopTyping', (user) => {
 });
 
 // === Online Status Indicator ===
-socket.on('userStatus', ({ user, status }) => {
+socket.on('userStatus', ({ user, status, lastSeen }) => {
   if (user !== userName) {
-    const statusDot = document.getElementById('status-dot');
-    statusDot.className = status;
+    const icon = user === 'Dog' ? '🐶' : '🐷';
+    const displayStatus = status === 'online'
+      ? '🟢 Online'
+      : `🔴 Last seen: ${new Date(lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+    document.getElementById('status-display').innerHTML = `
+      ${icon} ${user}<br>
+      ${displayStatus}
+    `;
   }
 });
+
 
 // === Message History ===
 socket.on('chat history', (messages) => {

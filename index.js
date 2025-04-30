@@ -58,6 +58,10 @@ io.on('connection', async (socket) => {
         socket.emit('auth error', 'Invalid username or password.');
         return;
       }
+
+      // ✅ Update online status
+      user.online = true;
+      await user.save();
   
       socket.username = user.username;
       onlineUsers[user.username] = socket.id;
@@ -100,13 +104,33 @@ io.on('connection', async (socket) => {
     socket.broadcast.emit('stopTyping', user);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     if (socket.username) {
-      delete onlineUsers[socket.username];
-      io.emit('userStatus', { user: socket.username, status: 'offline' });
+      try {
+        // ✅ Update DB with offline status and last seen time
+        const user = await User.findOne({ username: socket.username });
+        if (user) {
+          user.online = false;
+          user.lastSeen = new Date();
+          await user.save();
+  
+          // 🔴 Notify all clients with updated last seen
+          io.emit('userStatus', {
+            user: user.username,
+            status: 'offline',
+            lastSeen: user.lastSeen
+          });
+        }
+  
+        delete onlineUsers[socket.username];
+      } catch (err) {
+        console.error('❌ Error updating user status on disconnect:', err);
+      }
     }
+  
     console.log('🔌 A user disconnected');
   });
+  
 });
 
 const PORT = process.env.PORT || 3000;

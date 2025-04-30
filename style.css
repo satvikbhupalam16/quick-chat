@@ -149,3 +149,11 @@ button:hover {
 .input-area button {
   width: 50px;
 }
+
+.status-box {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+  color: #ccc;
+}
