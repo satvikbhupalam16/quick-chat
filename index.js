@@ -1,14 +1,27 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const mongoose = require('mongoose');
 const path = require('path');
+
+// Import Mongoose models
+const User = require('./models/User');
+const Message = require('./models/Message');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
-
-const chatHistory = [];
 const onlineUsers = {};
+
+// ✅ Connect to MongoDB
+mongoose.connect('mongodb+srv://sf_admin:Rss%401234567890@cluster0.vs2ktwe.mongodb.net/chatDB?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('✅ Connected to MongoDB');
+}).catch((error) => {
+  console.error('❌ MongoDB connection error:', error);
+});
 
 // Serve static files
 app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
@@ -24,24 +37,54 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
+// === Socket.IO Chat Logic ===
+io.on('connection', async (socket) => {
+  console.log('🔌 A user connected');
 
-  // Send chat history to new user
-  socket.emit('chat history', chatHistory);
+  // 🕒 Send latest 50 messages from DB
+  try {
+    const messages = await Message.find().sort({ createdAt: -1 }).limit(50).lean();
+    socket.emit('chat history', messages.reverse()); // reverse for oldest-first
+  } catch (err) {
+    console.error('❌ Error loading messages:', err);
+  }
 
-  socket.on('set name', (data) => {
-    socket.username = data.name;
-    onlineUsers[socket.username] = socket.id;
-
-    socket.emit('name set', { name: data.name });
-    io.emit('userStatus', { user: data.name, status: 'online' });
+  // 🔐 User authentication (login)
+  socket.on('set name', async (data) => {
+    try {
+      const user = await User.findOne({ username: data.name });
+  
+      if (!user || user.password !== data.password) {
+        socket.emit('auth error', 'Invalid username or password.');
+        return;
+      }
+  
+      socket.username = user.username;
+      onlineUsers[user.username] = socket.id;
+  
+      socket.emit('name set', { name: user.username });
+      io.emit('userStatus', { user: user.username, status: 'online' });
+  
+    } catch (error) {
+      console.error('❌ Auth error:', error);
+      socket.emit('auth error', 'Server error.');
+    }
   });
+  
 
-  socket.on('chat message', (data) => {
-    data.status = 'sent';
-    chatHistory.push(data);
-    io.emit('chat message', data);
+  // 💬 Handle message sending and saving
+  socket.on('chat message', async (data) => {
+    try {
+      const msg = new Message({
+        sender: data.sender,
+        message: data.msg,
+        time: data.time
+      });
+      await msg.save();
+      io.emit('chat message', data);
+    } catch (err) {
+      console.error('❌ Error saving message:', err);
+    }
   });
 
   socket.on('message seen', (data) => {
@@ -62,7 +105,7 @@ io.on('connection', (socket) => {
       delete onlineUsers[socket.username];
       io.emit('userStatus', { user: socket.username, status: 'offline' });
     }
-    console.log('A user disconnected');
+    console.log('🔌 A user disconnected');
   });
 });
 
