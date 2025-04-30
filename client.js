@@ -89,21 +89,22 @@ document.getElementById('back-btn').addEventListener('click', () => {
 // === Add Message to DOM ===
 function addMessageToDOM(data) {
   const isUser = userName && data.sender === userName;
+  const senderName = data.sender || 'Unknown';
+  const messageText = data.msg || '[No message]';
+  const timeText = data.time || '';
+
   const message = document.createElement('div');
   message.classList.add('message', isUser ? 'user' : 'friend');
 
-  const timeDisplay = `<div class="timestamp">${data.time}</div>`;
-
   message.innerHTML = `
-    ${!isUser ? `<strong>${data.sender}:</strong>` : ''}
-    ${data.msg}
-    ${timeDisplay}
+    ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
+    ${messageText}
+    <div class="timestamp">${timeText}</div>
   `;
 
   document.getElementById('messages').prepend(message);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 }
-
 // === Typing Indicator ===
 socket.on('typing', (user) => {
   if (user !== userName) {
