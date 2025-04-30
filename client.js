@@ -108,8 +108,8 @@ function addMessageToDOM(data) {
     <div class="timestamp">${timeText}</div>
   `;
 
-  // ✅ If it's your own message, add a 🗑️ delete button
-  if (isUser && data._id) {
+  // ✅ If it's your own / received message, add a 🗑️ delete button
+  if (data._id) {
     const delBtn = document.createElement('button');
     delBtn.textContent = '🗑️';
     delBtn.classList.add('delete-btn');
@@ -118,7 +118,7 @@ function addMessageToDOM(data) {
       socket.emit('delete for me', { username: userName, messageId: msgId });
     };
     message.appendChild(delBtn);
-  }
+  }  
 
   // ✅ Add the message to the chat DOM
   document.getElementById('messages').prepend(message);
