@@ -81,13 +81,51 @@ msgInput.addEventListener('input', () => {
 
 // === Clear Chat ===
 document.getElementById('clear-btn').addEventListener('click', () => {
-  document.getElementById('messages').innerHTML = '';
+  showClearChatMenu();
 });
 
 // === Back to Home ===
 document.getElementById('back-btn').addEventListener('click', () => {
   window.location.href = 'https://quick-chat-fumk.onrender.com/';
 });
+
+function showClearChatMenu() {
+  const oldMenu = document.getElementById('clear-menu');
+  if (oldMenu) oldMenu.remove();
+
+  const menu = document.createElement('div');
+  menu.id = 'clear-menu';
+  menu.className = 'delete-popup';
+  menu.style.top = '60px';
+  menu.style.right = '10px';
+
+  // ✅ Option 1: Delete for Me
+  const deleteMe = document.createElement('div');
+  deleteMe.textContent = 'Clear History for Me';
+  deleteMe.onclick = () => {
+    socket.emit('clear history for me', userName);
+    menu.remove();
+  };
+  menu.appendChild(deleteMe);
+
+  // ✅ Option 2: Delete for Everyone
+  const deleteAll = document.createElement('div');
+  deleteAll.textContent = 'Clear History for Everyone';
+  deleteAll.onclick = () => {
+    socket.emit('clear history for everyone');
+    menu.remove();
+  };
+  menu.appendChild(deleteAll);
+
+  // Cancel
+  const cancel = document.createElement('div');
+  cancel.textContent = 'Cancel';
+  cancel.onclick = () => menu.remove();
+  menu.appendChild(cancel);
+
+  document.body.appendChild(menu);
+}
+
 
 function showDeleteMenu(x, y, canDeleteForEveryone) {
   // Remove existing popup if any
@@ -222,6 +260,11 @@ socket.on('message removed', (messageId) => {
   const msgEl = document.querySelector(`[data-id="${messageId}"]`);
   if (msgEl) msgEl.remove();
 });
+
+socket.on('all messages removed', () => {
+  document.getElementById('messages').innerHTML = '';
+});
+
 
 // === Other User's Status Display ===
 socket.on('otherUserStatus', ({ username, online, lastSeen }) => {

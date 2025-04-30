@@ -128,6 +128,29 @@ io.on('connection', (socket) => {
   });
   
 
+  socket.on('clear history for me', async (username) => {
+    try {
+      const allMessageIds = await Message.find({}, '_id').lean();
+      const ids = allMessageIds.map(msg => msg._id);
+      await User.updateOne(
+        { username },
+        { $addToSet: { deletedMessages: { $each: ids } } }
+      );
+      socket.emit('all messages removed');
+    } catch (err) {
+      console.error('❌ Error clearing history for user:', err);
+    }
+  });
+  
+  socket.on('clear history for everyone', async () => {
+    try {
+      await Message.deleteMany({});
+      io.emit('all messages removed');
+    } catch (err) {
+      console.error('❌ Error clearing history for all:', err);
+    }
+  });
+  
   // 🔌 Handle disconnect
   socket.on('disconnect', async () => {
     if (socket.username) {
