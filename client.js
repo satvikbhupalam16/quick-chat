@@ -24,17 +24,17 @@ document.getElementById('submit-login').addEventListener('click', () => {
     document.getElementById('name-container').style.display = 'none';
     document.getElementById('chat').style.display = 'flex';
   });
-  
+
   socket.on('auth error', (msg) => {
-    alert(msg); // Or show a better styled error
+    alert(msg);
   });
-  
+}); // ✅ FIXED: Closing this block properly
 
 // === Toggle Password Visibility ===
 document.getElementById('toggle-password').addEventListener('click', () => {
   const passwordInput = document.getElementById('password');
   const icon = document.querySelector('#toggle-password i');
-  
+
   if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
     icon.classList.remove('fa-eye-slash');
@@ -45,7 +45,6 @@ document.getElementById('toggle-password').addEventListener('click', () => {
     icon.classList.add('fa-eye-slash');
   }
 });
-
 
 // === Send Message ===
 document.getElementById('send-btn').addEventListener('click', () => {
