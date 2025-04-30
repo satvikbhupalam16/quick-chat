@@ -7,6 +7,11 @@ let selectedMessageSender = null;
 let pendingMessages = [];
 let chatReady = false;
 
+if (userName === 'Dog' && 'Notification' in window && Notification.permission !== 'granted') {
+  Notification.requestPermission();
+}
+
+
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
   const secretCode = document.getElementById('secret-code').value.trim();
@@ -173,6 +178,14 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   document.body.appendChild(menu);
 }
 
+function showBrowserNotification(title, message) {
+  if (Notification.permission === 'granted') {
+    new Notification(title, {
+      body: message,
+      icon: '/favicon.ico' // Optional: add your logo
+    });
+  }
+}
 
 
 // === Add Message to DOM ===
@@ -238,6 +251,10 @@ socket.on('userStatus', ({ user, status, lastSeen }) => {
       ${displayStatus}
     `;
   }
+  if (userName === 'Dog' && user !== userName && status === 'online') {
+    showBrowserNotification('QCApp', `${user} is online`);
+  }
+  
 });
 
 
@@ -253,6 +270,10 @@ socket.on('chat history', (messages) => {
 // === Live Messages ===
 socket.on('chat message', (data) => {
   addMessageToDOM(data);
+  if (userName === 'Dog' && data.sender !== userName && document.hidden) {
+    showBrowserNotification('QCApp', `${data.sender}: ${data.msg}`);
+  }
+  
 });
 
 // === Delete for Me ===
