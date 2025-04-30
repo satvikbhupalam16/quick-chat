@@ -90,7 +90,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 function addMessageToDOM(data) {
   const isUser = userName && data.sender === userName;
   const senderName = data.sender || 'Unknown';
-  const messageText = data.msg || '[No message]';
+  const messageText = data.msg || data.messae || '[No message]';
   const timeText = data.time || '';
 
   const message = document.createElement('div');
