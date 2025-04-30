@@ -12,25 +12,23 @@ document.getElementById('submit-code').addEventListener('click', () => {
   }
 });
 
-const allowedUsers = {
-  "User_M": "Rss@1234567890",
-  "User_S": "Rss@1234567890"
-};
-
 // === Login Validation (Username + Password) ===
 document.getElementById('submit-login').addEventListener('click', () => {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  if (allowedUsers[username] && allowedUsers[username] === password) {
-    userName = username; // Set this as chat name
-    socket.emit('set name', { name: username });
+  userName = username;
+  socket.emit('set name', { name: username, password });
+
+  socket.on('name set', (data) => {
     document.getElementById('name-container').style.display = 'none';
     document.getElementById('chat').style.display = 'flex';
-  } else {
-    alert("Invalid username or password. Please try again.");
-  }
-});
+  });
+  
+  socket.on('auth error', (msg) => {
+    alert(msg); // Or show a better styled error
+  });
+  
 
 // === Toggle Password Visibility ===
 document.getElementById('toggle-password').addEventListener('click', () => {
