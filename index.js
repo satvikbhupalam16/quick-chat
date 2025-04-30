@@ -62,6 +62,12 @@ io.on('connection', async (socket) => {
       // ✅ Update online status
       user.online = true;
       await user.save();
+
+      io.emit('userStatus', {
+        user: user.username,
+        status: 'online',
+        lastSeen: null // since user is now online
+      });
   
       socket.username = user.username;
       onlineUsers[user.username] = socket.id;

@@ -1,6 +1,9 @@
 const socket = io();
 let userName = '';
 
+let pendingMessages = [];
+let chatReady = false;
+
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
   const secretCode = document.getElementById('secret-code').value.trim();
@@ -17,18 +20,23 @@ document.getElementById('submit-login').addEventListener('click', () => {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  userName = username;
   socket.emit('set name', { name: username, password });
+});
 
-  socket.on('name set', (data) => {
-    document.getElementById('name-container').style.display = 'none';
-    document.getElementById('chat').style.display = 'flex';
-  });
+// Only register these once:
+socket.on('name set', (data) => {
+  userName = data.name;
+  chatReady = true;
 
-  socket.on('auth error', (msg) => {
-    alert(msg);
-  });
-}); // ✅ FIXED: Closing this block properly
+  pendingMessages.forEach(data => addMessageToDOM(data));
+  pendingMessages = [];
+  document.getElementById('name-container').style.display = 'none';
+  document.getElementById('chat').style.display = 'flex';
+});
+
+socket.on('auth error', (msg) => {
+  alert(msg);
+});
 
 // === Toggle Password Visibility ===
 document.getElementById('toggle-password').addEventListener('click', () => {
@@ -80,7 +88,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 
 // === Add Message to DOM ===
 function addMessageToDOM(data) {
-  const isUser = data.sender === userName;
+  const isUser = userName && data.sender === userName;
   const message = document.createElement('div');
   message.classList.add('message', isUser ? 'user' : 'friend');
 
@@ -128,7 +136,11 @@ socket.on('userStatus', ({ user, status, lastSeen }) => {
 
 // === Message History ===
 socket.on('chat history', (messages) => {
-  messages.forEach(data => addMessageToDOM(data));
+  if (!chatReady) {
+    pendingMessages = messages; // hold onto them
+  } else {
+    messages.forEach(data => addMessageToDOM(data));
+  }
 });
 
 // === Live Messages ===
