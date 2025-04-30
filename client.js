@@ -148,3 +148,18 @@ socket.on('chat history', (messages) => {
 socket.on('chat message', (data) => {
   addMessageToDOM(data);
 });
+
+// === Other User's Status Display ===
+socket.on('otherUserStatus', ({ username, online, lastSeen }) => {
+  const iconMap = { 'Dog': '🐶', 'Pig': '🐷' };
+  const icon = iconMap[username] || '👤';
+
+  const displayStatus = online
+    ? `<span class="online-dot"></span> Online`
+    : `<span class="offline-dot"></span> Last seen: ${new Date(lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  document.getElementById('status-display').innerHTML = `
+    <div class="status-name">${icon} ${username}</div>
+    <div class="status-info">${displayStatus}</div>
+  `;
+});
