@@ -90,6 +90,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 });
 
 function showDeleteMenu(x, y, canDeleteForEveryone) {
+  // Remove existing popup if any
   const oldMenu = document.getElementById('delete-menu');
   if (oldMenu) oldMenu.remove();
 
@@ -99,6 +100,7 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   menu.style.top = `${y}px`;
   menu.style.left = `${x}px`;
 
+  // ✅ Option 1: Delete for Me
   const deleteMe = document.createElement('div');
   deleteMe.textContent = 'Delete for Me';
   deleteMe.onclick = () => {
@@ -109,6 +111,7 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   };
   menu.appendChild(deleteMe);
 
+  // ✅ Option 2: Delete for Everyone (if sender)
   if (canDeleteForEveryone) {
     const deleteAll = document.createElement('div');
     deleteAll.textContent = 'Delete for Everyone';
@@ -121,8 +124,17 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
     menu.appendChild(deleteAll);
   }
 
+  // ✅ Option 3: Cancel
+  const cancel = document.createElement('div');
+  cancel.textContent = 'Cancel';
+  cancel.onclick = () => {
+    menu.remove();
+  };
+  menu.appendChild(cancel);
+
   document.body.appendChild(menu);
 }
+
 
 
 // === Add Message to DOM ===

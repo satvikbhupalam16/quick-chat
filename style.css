@@ -237,3 +237,9 @@ button:hover {
 .delete-popup div:hover {
   background-color: #333;
 }
+
+.delete-popup div:last-child {
+  color: #888;
+  border-top: 1px solid #444;
+  margin-top: 5px;
+}
