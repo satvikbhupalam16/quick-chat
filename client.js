@@ -34,6 +34,9 @@ socket.on('name set', (data) => {
     Notification.requestPermission().then((permission) => {
       console.log('Notification permission:', permission);
     });
+    console.log('Logged in as:', userName);
+    console.log('Notification permission:', Notification.permission);
+
   }
   
   chatReady = true;
@@ -181,6 +184,7 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
 }
 
 function showBrowserNotification(title, message) {
+  console.log('🚨 Showing notification:', title, message); // ✅ Add this
   if (Notification.permission === 'granted') {
     new Notification(title, {
       body: message,
