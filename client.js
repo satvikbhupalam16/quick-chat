@@ -96,15 +96,35 @@ function addMessageToDOM(data) {
   const message = document.createElement('div');
   message.classList.add('message', isUser ? 'user' : 'friend');
 
+  // ✅ Attach the MongoDB message ID to the DOM element
+  if (data._id) {
+    message.setAttribute('data-id', data._id);
+  }
+
+  // ✅ Set the message content
   message.innerHTML = `
     ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
     ${messageText}
     <div class="timestamp">${timeText}</div>
   `;
 
+  // ✅ If it's your own message, add a 🗑️ delete button
+  if (isUser && data._id) {
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '🗑️';
+    delBtn.classList.add('delete-btn');
+    delBtn.onclick = () => {
+      const msgId = message.getAttribute('data-id');
+      socket.emit('delete for me', { username: userName, messageId: msgId });
+    };
+    message.appendChild(delBtn);
+  }
+
+  // ✅ Add the message to the chat DOM
   document.getElementById('messages').prepend(message);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 }
+
 // === Typing Indicator ===
 socket.on('typing', (user) => {
   if (user !== userName) {
@@ -147,6 +167,12 @@ socket.on('chat history', (messages) => {
 // === Live Messages ===
 socket.on('chat message', (data) => {
   addMessageToDOM(data);
+});
+
+// === Delete for Me ===
+socket.on('message removed', (messageId) => {
+  const msgEl = document.querySelector(`[data-id="${messageId}"]`);
+  if (msgEl) msgEl.remove();
 });
 
 // === Other User's Status Display ===

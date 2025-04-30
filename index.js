@@ -14,14 +14,9 @@ const io = socketIo(server);
 const onlineUsers = {};
 
 // ✅ Connect to MongoDB
-mongoose.connect('mongodb+srv://sf_admin:Rss%401234567890@cluster0.vs2ktwe.mongodb.net/chatDB?retryWrites=true&w=majority&appName=Cluster0', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('✅ Connected to MongoDB');
-}).catch((error) => {
-  console.error('❌ MongoDB connection error:', error);
-});
+mongoose.connect('mongodb+srv://sf_admin:Rss%401234567890@cluster0.vs2ktwe.mongodb.net/chatDB?retryWrites=true&w=majority&appName=Cluster0')
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch((error) => console.error('❌ MongoDB connection error:', error));
 
 // Serve static files
 app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
@@ -29,53 +24,42 @@ app.use('/SF_Home_Page.css', express.static(path.join(__dirname, 'SF_Home_Page.c
 app.use('/client.js', express.static(path.join(__dirname, 'client.js')));
 
 // Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'SF_Home_Page.html'));
-});
-
-app.get('/chat', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'SF_Home_Page.html')));
+app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // === Socket.IO Chat Logic ===
-io.on('connection', async (socket) => {
+io.on('connection', (socket) => {
   console.log('🔌 A user connected');
-
-  // 🕒 Send latest 50 messages from DB
-  try {
-    const messages = await Message.find().sort({ createdAt: -1 }).limit(50).lean();
-    socket.emit('chat history', messages.reverse()); // reverse for oldest-first
-  } catch (err) {
-    console.error('❌ Error loading messages:', err);
-  }
 
   // 🔐 User authentication (login)
   socket.on('set name', async (data) => {
     try {
       const user = await User.findOne({ username: data.name });
-  
+
       if (!user || user.password !== data.password) {
         socket.emit('auth error', 'Invalid username or password.');
         return;
       }
 
-      // ✅ Update online status
+      // ✅ Update user online status
       user.online = true;
       await user.save();
 
-      io.emit('userStatus', {
-        user: user.username,
-        status: 'online',
-        lastSeen: null // since user is now online
-      });
-  
       socket.username = user.username;
       onlineUsers[user.username] = socket.id;
-  
-      socket.emit('name set', { name: user.username });
-      // 🔍 Dynamically find the other user
-      const otherUser = await User.findOne({ username: { $ne: user.username } });
 
+      socket.emit('name set', { name: user.username });
+
+      // ✅ Send filtered chat history (excluding user's deleted messages)
+      const allMessages = await Message.find().sort({ createdAt: -1 }).lean();
+      const deletedIds = (user.deletedMessages || []).map(id => id.toString());
+      const filteredMessages = allMessages.filter(msg =>
+        !deletedIds.includes(msg._id.toString())
+      );
+      socket.emit('chat history', filteredMessages.reverse());
+
+      // ✅ Send other user's status
+      const otherUser = await User.findOne({ username: { $ne: user.username } });
       if (otherUser) {
         socket.emit('otherUserStatus', {
           username: otherUser.username,
@@ -84,16 +68,16 @@ io.on('connection', async (socket) => {
         });
       }
 
+      // ✅ Notify all clients this user is online
       io.emit('userStatus', { user: user.username, status: 'online' });
-  
+
     } catch (error) {
       console.error('❌ Auth error:', error);
       socket.emit('auth error', 'Server error.');
     }
   });
-  
 
-  // 💬 Handle message sending and saving
+  // 💬 Handle sending and saving messages
   socket.on('chat message', async (data) => {
     try {
       const msg = new Message({
@@ -102,52 +86,60 @@ io.on('connection', async (socket) => {
         time: data.time
       });
       await msg.save();
+      // Add _id to message so it can be tracked for deletion
+      data._id = msg._id;
       io.emit('chat message', data);
     } catch (err) {
       console.error('❌ Error saving message:', err);
     }
   });
 
+  // 👁️ Handle message seen
   socket.on('message seen', (data) => {
     data.status = 'seen';
     io.emit('update status', data);
   });
 
-  socket.on('typing', (user) => {
-    socket.broadcast.emit('typing', user);
+  // 🟢 Typing indicators
+  socket.on('typing', (user) => socket.broadcast.emit('typing', user));
+  socket.on('stopTyping', (user) => socket.broadcast.emit('stopTyping', user));
+
+  // 🧹 Handle "delete for me"
+  socket.on('delete for me', async ({ username, messageId }) => {
+    try {
+      await User.updateOne(
+        { username },
+        { $addToSet: { deletedMessages: messageId } }
+      );
+      socket.emit('message removed', messageId);
+    } catch (err) {
+      console.error('❌ Failed to delete message for user:', err);
+    }
   });
 
-  socket.on('stopTyping', (user) => {
-    socket.broadcast.emit('stopTyping', user);
-  });
-
+  // 🔌 Handle disconnect
   socket.on('disconnect', async () => {
     if (socket.username) {
       try {
-        // ✅ Update DB with offline status and last seen time
         const user = await User.findOne({ username: socket.username });
         if (user) {
           user.online = false;
           user.lastSeen = new Date();
           await user.save();
-  
-          // 🔴 Notify all clients with updated last seen
+
           io.emit('userStatus', {
             user: user.username,
             status: 'offline',
             lastSeen: user.lastSeen
           });
         }
-  
         delete onlineUsers[socket.username];
       } catch (err) {
         console.error('❌ Error updating user status on disconnect:', err);
       }
     }
-  
     console.log('🔌 A user disconnected');
   });
-  
 });
 
 const PORT = process.env.PORT || 3000;

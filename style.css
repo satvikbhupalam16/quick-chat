@@ -183,3 +183,17 @@ button:hover {
 .offline-dot {
   background-color: #f44336;
 }
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 14px;
+  float: right;
+  cursor: pointer;
+  display: none;
+}
+
+.message:hover .delete-btn {
+  display: inline;
+}
