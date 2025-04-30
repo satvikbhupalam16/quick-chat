@@ -7,10 +7,6 @@ let selectedMessageSender = null;
 let pendingMessages = [];
 let chatReady = false;
 
-if (userName === 'Dog' && 'Notification' in window && Notification.permission !== 'granted') {
-  Notification.requestPermission();
-}
-
 
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
@@ -34,6 +30,12 @@ document.getElementById('submit-login').addEventListener('click', () => {
 // Only register these once:
 socket.on('name set', (data) => {
   userName = data.name;
+  if (userName === 'Dog' && 'Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission().then((permission) => {
+      console.log('Notification permission:', permission);
+    });
+  }
+  
   chatReady = true;
 
   pendingMessages.forEach(data => addMessageToDOM(data));
