@@ -1,6 +1,9 @@
 const socket = io();
 let userName = '';
 
+let selectedMessageId = null;
+let selectedMessageSender = null;
+
 let pendingMessages = [];
 let chatReady = false;
 
@@ -86,6 +89,42 @@ document.getElementById('back-btn').addEventListener('click', () => {
   window.location.href = 'https://quick-chat-fumk.onrender.com/';
 });
 
+function showDeleteMenu(x, y, canDeleteForEveryone) {
+  const oldMenu = document.getElementById('delete-menu');
+  if (oldMenu) oldMenu.remove();
+
+  const menu = document.createElement('div');
+  menu.id = 'delete-menu';
+  menu.className = 'delete-popup';
+  menu.style.top = `${y}px`;
+  menu.style.left = `${x}px`;
+
+  const deleteMe = document.createElement('div');
+  deleteMe.textContent = 'Delete for Me';
+  deleteMe.onclick = () => {
+    if (selectedMessageId) {
+      socket.emit('delete for me', { username: userName, messageId: selectedMessageId });
+    }
+    menu.remove();
+  };
+  menu.appendChild(deleteMe);
+
+  if (canDeleteForEveryone) {
+    const deleteAll = document.createElement('div');
+    deleteAll.textContent = 'Delete for Everyone';
+    deleteAll.onclick = () => {
+      if (selectedMessageId) {
+        socket.emit('delete for everyone', selectedMessageId);
+      }
+      menu.remove();
+    };
+    menu.appendChild(deleteAll);
+  }
+
+  document.body.appendChild(menu);
+}
+
+
 // === Add Message to DOM ===
 function addMessageToDOM(data) {
   const isUser = userName && data.sender === userName;
@@ -99,6 +138,15 @@ function addMessageToDOM(data) {
   // ✅ Attach the MongoDB message ID to the DOM element
   if (data._id) {
     message.setAttribute('data-id', data._id);
+    message.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); // stop default right-click behavior
+    
+      selectedMessageId = data._id;
+      selectedMessageSender = data.sender;
+    
+      showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
+    });
+    
   }
 
   // ✅ Set the message content
@@ -107,18 +155,6 @@ function addMessageToDOM(data) {
     ${messageText}
     <div class="timestamp">${timeText}</div>
   `;
-
-  // ✅ If it's your own / received message, add a 🗑️ delete button
-  if (data._id) {
-    const delBtn = document.createElement('button');
-    delBtn.textContent = '🗑️';
-    delBtn.classList.add('delete-btn');
-    delBtn.onclick = () => {
-      const msgId = message.getAttribute('data-id');
-      socket.emit('delete for me', { username: userName, messageId: msgId });
-    };
-    message.appendChild(delBtn);
-  }  
 
   // ✅ Add the message to the chat DOM
   document.getElementById('messages').prepend(message);

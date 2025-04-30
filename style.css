@@ -197,3 +197,43 @@ button:hover {
 .message:hover .delete-btn {
   display: inline;
 }
+
+.message-actions {
+  display: flex;
+  gap: 5px;
+  float: right;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 12px;
+  cursor: pointer;
+  display: none;
+}
+
+.message:hover .delete-btn {
+  display: inline;
+}
+
+.delete-popup {
+  position: absolute;
+  background-color: #222;
+  border: 1px solid #444;
+  border-radius: 5px;
+  padding: 5px;
+  z-index: 1000;
+  min-width: 140px;
+}
+
+.delete-popup div {
+  padding: 8px 10px;
+  color: #eee;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-popup div:hover {
+  background-color: #333;
+}

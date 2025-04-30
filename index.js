@@ -117,6 +117,17 @@ io.on('connection', (socket) => {
     }
   });
 
+  // 🧹 Handle "delete for Everyone"
+  socket.on('delete for everyone', async (messageId) => {
+    try {
+      await Message.deleteOne({ _id: messageId });
+      io.emit('message removed', messageId); // broadcast to all
+    } catch (err) {
+      console.error('❌ Error deleting message from DB:', err);
+    }
+  });
+  
+
   // 🔌 Handle disconnect
   socket.on('disconnect', async () => {
     if (socket.username) {
