@@ -64,7 +64,7 @@ button:hover {
   color: white;
   padding: 16px 20px;
   display: flex;
-  justify-content: right;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -151,9 +151,35 @@ button:hover {
 }
 
 .status-box {
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 10px;
-  padding: 4px 8px;
-  color: #ccc;
+  margin: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.status-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.status-info {
+  font-size: 13px;
+  color: #bbb;
+  margin-top: 2px;
+}
+
+.online-dot, .offline-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.online-dot {
+  background-color: #4caf50;
+}
+
+.offline-dot {
+  background-color: #f44336;
 }

@@ -73,6 +73,17 @@ io.on('connection', async (socket) => {
       onlineUsers[user.username] = socket.id;
   
       socket.emit('name set', { name: user.username });
+      // 🔍 Dynamically find the other user
+      const otherUser = await User.findOne({ username: { $ne: user.username } });
+
+      if (otherUser) {
+        socket.emit('otherUserStatus', {
+          username: otherUser.username,
+          online: otherUser.online,
+          lastSeen: otherUser.lastSeen
+        });
+      }
+
       io.emit('userStatus', { user: user.username, status: 'online' });
   
     } catch (error) {
