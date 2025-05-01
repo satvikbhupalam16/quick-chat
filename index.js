@@ -31,6 +31,11 @@ app.use('/VoiceCall.js', express.static(path.join(__dirname, 'VoiceCall.js')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'SF_Home_Page.html')));
 app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
+app.get('/VoiceCall.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'VoiceCall.html'));
+});
+
+
 // === Socket.IO Chat Logic ===
 io.on('connection', (socket) => {
   console.log('🔌 A user connected');
