@@ -121,6 +121,39 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
+document.getElementById('goto-call').addEventListener('click', () => {
+  const popup = document.createElement('div');
+  popup.className = 'call-popup';
+
+  popup.innerHTML = `
+    <div class="call-popup-box">
+      <p>Start a call:</p>
+      <button id="start-audio-call">📞 Audio Call</button>
+      <button id="start-video-call">🎥 Video Call</button>
+      <button id="cancel-call">❌ Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  // Audio Call
+  document.getElementById('start-audio-call').addEventListener('click', () => {
+    window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
+    popup.remove();
+  });
+
+  // Video Call
+  document.getElementById('start-video-call').addEventListener('click', () => {
+    alert('Video call functionality coming soon!');
+    popup.remove();
+  });
+
+  // Cancel
+  document.getElementById('cancel-call').addEventListener('click', () => {
+    popup.remove();
+  });
+});
+
 
 // === Reply ===
 document.getElementById('cancel-reply').addEventListener('click', () => {
