@@ -6,7 +6,7 @@ let selectedMessageSender = null;
 let replyTo = null;
 let pendingMessages = [];
 let chatReady = false;
-
+let typingTimeout;
 
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
@@ -99,8 +99,13 @@ const msgInput = document.getElementById('message');
 msgInput.addEventListener('input', () => {
   if (msgInput.value.trim()) {
     socket.emit('typing', userName);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stopTyping', userName);
+    }, 3000);
   } else {
     socket.emit('stopTyping', userName);
+    clearTimeout(typingTimeout);
   }
 });
 
@@ -278,8 +283,8 @@ if (data.reply) {
 // === Typing Indicator ===
 socket.on('typing', (user) => {
   if (user !== userName) {
-    document.getElementById('typing-indicator').textContent = `${user} is typing...`;
-    document.getElementById('typing-indicator').style.display = 'block';
+    document.getElementById('typing-user').textContent = `${user === 'Pig' ? '🐷 Pig' : '🐶 Dog'}`;
+    document.getElementById('typing-indicator').style.display = 'flex';
   }
 });
 
