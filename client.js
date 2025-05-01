@@ -138,7 +138,7 @@ document.getElementById('goto-call').addEventListener('click', () => {
 
   // Audio Call
   document.getElementById('start-audio-call').addEventListener('click', () => {
-    window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
+    window.open('VoiceCall.html', '_blank', 'width=400,height=600');
     popup.remove();
   });
 
