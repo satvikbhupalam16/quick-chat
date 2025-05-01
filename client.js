@@ -116,8 +116,11 @@ document.getElementById('clear-btn').addEventListener('click', () => {
 
 // === Back to Home ===
 document.getElementById('back-btn').addEventListener('click', () => {
-  window.location.href = 'https://quick-chat-fumk.onrender.com/';
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = 'https://quick-chat-fumk.onrender.com/';
+  }
 });
+
 
 // === Reply ===
 document.getElementById('cancel-reply').addEventListener('click', () => {
@@ -149,9 +152,12 @@ function showClearChatMenu() {
   const deleteAll = document.createElement('div');
   deleteAll.textContent = 'Clear History for Everyone';
   deleteAll.onclick = () => {
-    socket.emit('clear history for everyone');
+    if (confirm('Clear entire chat for everyone?')) {
+      socket.emit('clear history for everyone');
+    }
     menu.remove();
   };
+  
   menu.appendChild(deleteAll);
 
   // Cancel
@@ -207,9 +213,11 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
     const deleteAll = document.createElement('div');
     deleteAll.textContent = 'Delete for Everyone';
     deleteAll.onclick = () => {
-      socket.emit('delete for everyone', selectedMessageId);
+      if (confirm('Delete this message for everyone?')) {
+        socket.emit('delete for everyone', selectedMessageId);
+      }
       menu.remove();
-    };
+    };    
     menu.appendChild(deleteAll);
   }
 
