@@ -22,10 +22,19 @@ mongoose.connect('mongodb+srv://sf_admin:Rss%401234567890@cluster0.vs2ktwe.mongo
 app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
 app.use('/SF_Home_Page.css', express.static(path.join(__dirname, 'SF_Home_Page.css')));
 app.use('/client.js', express.static(path.join(__dirname, 'client.js')));
+// Call features
+app.use('/VoiceCall.css', express.static(path.join(__dirname, 'VoiceCall.css')));
+app.use('/VoiceCall.js', express.static(path.join(__dirname, 'VoiceCall.js')));
+
 
 // Routes
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'SF_Home_Page.html')));
 app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+
+app.get('/VoiceCall.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'VoiceCall.html'));
+});
+
 
 // === Socket.IO Chat Logic ===
 io.on('connection', (socket) => {

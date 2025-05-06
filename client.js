@@ -3,10 +3,10 @@ let userName = '';
 
 let selectedMessageId = null;
 let selectedMessageSender = null;
-
+let replyTo = null;
 let pendingMessages = [];
 let chatReady = false;
-
+let typingTimeout;
 
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
@@ -73,19 +73,39 @@ document.getElementById('send-btn').addEventListener('click', () => {
   const msg = msgInput.value.trim();
   if (msg) {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    socket.emit('chat message', { sender: userName, msg, time });
+
+    // ✅ Include reply if present
+    socket.emit('chat message', {
+      sender: userName,
+      msg,
+      time,
+      reply: replyTo ? {
+        sender: replyTo.sender,
+        message: replyTo.message
+      } : null
+    });
+
+    // ✅ Clear input and reply preview
     msgInput.value = '';
+    replyTo = null;
+    document.getElementById('reply-preview').style.display = 'none';
     socket.emit('stopTyping', userName);
   }
 });
+
 
 // === Typing Event ===
 const msgInput = document.getElementById('message');
 msgInput.addEventListener('input', () => {
   if (msgInput.value.trim()) {
     socket.emit('typing', userName);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stopTyping', userName);
+    }, 3000);
   } else {
     socket.emit('stopTyping', userName);
+    clearTimeout(typingTimeout);
   }
 });
 
@@ -96,8 +116,51 @@ document.getElementById('clear-btn').addEventListener('click', () => {
 
 // === Back to Home ===
 document.getElementById('back-btn').addEventListener('click', () => {
-  window.location.href = 'https://quick-chat-fumk.onrender.com/';
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = 'https://quick-chat-fumk.onrender.com/';
+  }
 });
+
+document.getElementById('goto-call').addEventListener('click', () => {
+  const popup = document.createElement('div');
+  popup.className = 'call-popup';
+
+  popup.innerHTML = `
+    <div class="call-popup-box">
+      <p>Start a call:</p>
+      <button id="start-audio-call">📞 Audio Call</button>
+      <button id="start-video-call">🎥 Video Call</button>
+      <button id="cancel-call">❌ Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  // Audio Call
+  document.getElementById('start-audio-call').addEventListener('click', () => {
+    window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
+    popup.remove();
+  });
+
+  // Video Call
+  document.getElementById('start-video-call').addEventListener('click', () => {
+    alert('Video call functionality coming soon!');
+    popup.remove();
+  });
+
+  // Cancel
+  document.getElementById('cancel-call').addEventListener('click', () => {
+    popup.remove();
+  });
+});
+
+
+// === Reply ===
+document.getElementById('cancel-reply').addEventListener('click', () => {
+  replyTo = null;
+  document.getElementById('reply-preview').style.display = 'none';
+});
+
 
 function showClearChatMenu() {
   const oldMenu = document.getElementById('clear-menu');
@@ -122,9 +185,12 @@ function showClearChatMenu() {
   const deleteAll = document.createElement('div');
   deleteAll.textContent = 'Clear History for Everyone';
   deleteAll.onclick = () => {
-    socket.emit('clear history for everyone');
+    if (confirm('Clear entire chat for everyone?')) {
+      socket.emit('clear history for everyone');
+    }
     menu.remove();
   };
+  
   menu.appendChild(deleteAll);
 
   // Cancel
@@ -138,7 +204,6 @@ function showClearChatMenu() {
 
 
 function showDeleteMenu(x, y, canDeleteForEveryone) {
-  // Remove existing popup if any
   const oldMenu = document.getElementById('delete-menu');
   if (oldMenu) oldMenu.remove();
 
@@ -148,40 +213,56 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   menu.style.top = `${y}px`;
   menu.style.left = `${x}px`;
 
-  // ✅ Option 1: Delete for Me
+  // ✅ 1. Reply Option
+  const replyOption = document.createElement('div');
+  replyOption.textContent = 'Reply';
+  replyOption.onclick = () => {
+    const originalMsg = document.querySelector(`[data-id="${selectedMessageId}"]`);
+    const replyMsg = originalMsg?.textContent.trim().split('\n')[0] || '[No message]';
+
+    replyTo = {
+      sender: selectedMessageSender,
+      message: replyMsg
+    };
+
+    document.getElementById('reply-text').textContent = replyMsg;
+    document.getElementById('reply-preview').style.display = 'block';
+
+    menu.remove();
+  };
+  menu.appendChild(replyOption);
+
+  // ✅ 2. Delete for Me
   const deleteMe = document.createElement('div');
   deleteMe.textContent = 'Delete for Me';
   deleteMe.onclick = () => {
-    if (selectedMessageId) {
-      socket.emit('delete for me', { username: userName, messageId: selectedMessageId });
-    }
+    socket.emit('delete for me', { username: userName, messageId: selectedMessageId });
     menu.remove();
   };
   menu.appendChild(deleteMe);
 
-  // ✅ Option 2: Delete for Everyone (if sender)
-  if (canDeleteForEveryone) {
+  // ✅ 3. Delete for Everyone (only if sender)
+  if (selectedMessageSender === userName) {
     const deleteAll = document.createElement('div');
     deleteAll.textContent = 'Delete for Everyone';
     deleteAll.onclick = () => {
-      if (selectedMessageId) {
+      if (confirm('Delete this message for everyone?')) {
         socket.emit('delete for everyone', selectedMessageId);
       }
       menu.remove();
-    };
+    };    
     menu.appendChild(deleteAll);
   }
 
-  // ✅ Option 3: Cancel
+  // ❌ 4. Cancel
   const cancel = document.createElement('div');
   cancel.textContent = 'Cancel';
-  cancel.onclick = () => {
-    menu.remove();
-  };
+  cancel.onclick = () => menu.remove();
   menu.appendChild(cancel);
 
   document.body.appendChild(menu);
 }
+
 
 function showBrowserNotification(title, message) {
   console.log('🚨 Showing notification:', title, message); // ✅ Add this
@@ -218,12 +299,22 @@ function addMessageToDOM(data) {
     
   }
 
+  let replyHtml = '';
+if (data.reply) {
+  replyHtml = `
+    <div class="reply-bubble">
+      <strong>${data.reply.sender}:</strong> ${data.reply.message}
+    </div>
+  `;
+}
+
   // ✅ Set the message content
   message.innerHTML = `
-    ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
-    ${messageText}
-    <div class="timestamp">${timeText}</div>
-  `;
+  ${replyHtml}
+  ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
+  ${messageText}
+  <div class="timestamp">${timeText}</div>
+`;
 
   // ✅ Add the message to the chat DOM
   document.getElementById('messages').prepend(message);
@@ -233,8 +324,8 @@ function addMessageToDOM(data) {
 // === Typing Indicator ===
 socket.on('typing', (user) => {
   if (user !== userName) {
-    document.getElementById('typing-indicator').textContent = `${user} is typing...`;
-    document.getElementById('typing-indicator').style.display = 'block';
+    document.getElementById('typing-user').textContent = `${user === 'Pig' ? '🐷 Pig' : '🐶 Dog'}`;
+    document.getElementById('typing-indicator').style.display = 'flex';
   }
 });
 
