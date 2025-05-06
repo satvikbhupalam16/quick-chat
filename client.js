@@ -138,8 +138,12 @@ document.getElementById('goto-call').addEventListener('click', () => {
 
   // Audio Call
   document.getElementById('start-audio-call').addEventListener('click', () => {
-    window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
-    popup.remove();
+  // Emit call request
+  socket.emit('call request', { from: userName });
+  popup.remove();
+
+  // Open call window for the caller
+  window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
   });
 
   // Video Call
@@ -352,6 +356,18 @@ socket.on('userStatus', ({ user, status, lastSeen }) => {
     showBrowserNotification('QCApp', `${user} is online`);
   }
   
+});
+
+socket.on('incoming call', ({ from }) => {
+  const accept = confirm(`${from} is calling. Accept?`);
+  if (accept) {
+    socket.emit('call accepted', { from });
+
+    // Open call window for receiver
+    window.open('/VoiceCall.html', '_blank', 'width=400,height=600');
+  } else {
+    socket.emit('call declined', { from });
+  }
 });
 
 

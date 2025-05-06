@@ -8,16 +8,30 @@
 </head>
 <body>
   <div class="call-container">
-    <div class="caller-name" id="caller-name">Calling Pig...</div>
+    <div class="caller-name" id="caller-name">Calling...</div>
     <div class="call-timer" id="call-timer">00:00</div>
 
+    <!-- Video elements -->
+    <div class="video-section">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+
+    <!-- Call control buttons -->
     <div class="call-controls">
       <button id="mute-btn">🔇</button>
       <button id="speaker-btn">🔈</button>
       <button id="end-call-btn">❌</button>
     </div>
+
+    <!-- Accept/Decline (for incoming calls) -->
+    <div class="incoming-controls">
+      <button id="acceptCall">✅ Accept</button>
+      <button id="declineCall">❌ Decline</button>
+    </div>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script src="/VoiceCall.js"></script>
 </body>
 </html>

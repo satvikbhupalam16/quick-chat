@@ -160,6 +160,50 @@ io.on('connection', (socket) => {
     }
   });
   
+  // 🔔 Call Request
+  socket.on('call request', ({ from }) => {
+    // Find the target user (calling another user)
+    const targetUser = Object.keys(onlineUsers).find(name => name !== from); // Assuming the other user is the target
+    const targetSocketId = onlineUsers[targetUser];
+
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('incoming call', { from }); // Notify the target user
+      console.log(`📞 Incoming call from ${from} to ${targetUser}`);
+    }
+  });
+
+// ✅ Handle Call Acceptance
+socket.on('call accepted', ({ from }) => {
+  // Notify the caller that the call was accepted
+  const callerSocketId = onlineUsers[from];
+  if (callerSocketId) {
+    io.to(callerSocketId).emit('call accepted');
+    console.log(`✔️ ${from} call accepted`);
+  }
+});
+
+// ❌ Handle Call Decline
+socket.on('call declined', ({ from }) => {
+  // Notify the caller that the call was declined
+  const callerSocketId = onlineUsers[from];
+  if (callerSocketId) {
+    io.to(callerSocketId).emit('call declined');
+    console.log(`❌ ${from} call declined`);
+  }
+});
+
+// 🛑 Handle Call Ended
+socket.on('call ended', ({ from }) => {
+  // Notify the other user that the call was ended
+  const otherUser = Object.keys(onlineUsers).find(name => name !== from);
+  const otherUserSocketId = onlineUsers[otherUser];
+
+  if (otherUserSocketId) {
+    io.to(otherUserSocketId).emit('call ended');
+    console.log(`📞 Call ended by ${from}`);
+  }
+});
+
   // 🔌 Handle disconnect
   socket.on('disconnect', async () => {
     if (socket.username) {
