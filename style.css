@@ -104,6 +104,9 @@ button:hover {
   margin: 5px 0;
   border-radius: 16px;
   font-size: 15px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .user {
@@ -282,7 +285,7 @@ button:hover {
 
 
 
-@media screen and (max-width: 768px) {
+/*@media screen and (max-width: 768px) {
   body {
     flex-direction: column;
     align-items: stretch;
@@ -338,3 +341,4 @@ button:hover {
     margin: 0 0 10px 0;
   }
 }
+*/

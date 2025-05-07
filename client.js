@@ -274,12 +274,19 @@ function showBrowserNotification(title, message) {
   }
 }
 
+function formatMessageText(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
+}
 
 // === Add Message to DOM ===
 function addMessageToDOM(data) {
   const isUser = userName && data.sender === userName;
   const senderName = data.sender || 'Unknown';
-  const messageText = data.msg || data.message || '[No message]';
+  const rawMessage = data.msg || data.message || '[No message]';
+  const messageText = formatMessageText(rawMessage);
   const timeText = data.time || '';
 
   const message = document.createElement('div');
