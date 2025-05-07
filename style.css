@@ -106,7 +106,7 @@ button:hover {
   font-size: 15px;
   word-wrap: break-word;
   overflow-wrap: anywhere;
-  white-space: pre-wrap;
+  /*white-space: pre-wrap;*/
 }
 
 .user {
