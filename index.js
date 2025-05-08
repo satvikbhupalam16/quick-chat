@@ -19,6 +19,7 @@ mongoose.connect('mongodb+srv://sf_admin:Rss%401234567890@cluster0.vs2ktwe.mongo
   .catch((error) => console.error('❌ MongoDB connection error:', error));
 
 // Serve static files
+app.use(express.static(path.join(__dirname)));
 app.use('/style.css', express.static(path.join(__dirname, 'style.css')));
 app.use('/SF_Home_Page.css', express.static(path.join(__dirname, 'SF_Home_Page.css')));
 app.use('/client.js', express.static(path.join(__dirname, 'client.js')));
