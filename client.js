@@ -8,6 +8,14 @@ let pendingMessages = [];
 let chatReady = false;
 let typingTimeout;
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('✅ Service Worker Registered'))
+      .catch(err => console.error('❌ SW Error:', err));
+  });
+}
+
 // === Secret Code Flow ===
 document.getElementById('submit-code').addEventListener('click', () => {
   const secretCode = document.getElementById('secret-code').value.trim();
