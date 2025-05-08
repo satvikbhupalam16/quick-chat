@@ -345,18 +345,23 @@ function addMessageToDOM(data) {
     ${messageText}
     <div class="timestamp">${timeText}</div>
   `;
-
-  // ✅ Now append the ⋮ menu button (after message is ready)
-  const menuBtn = document.createElement('span');
-  menuBtn.classList.add('message-menu-btn');
-  menuBtn.textContent = '⋮';
-  menuBtn.onclick = (e) => {
+  
+    const menuBtn = document.createElement('span');
+    menuBtn.classList.add('message-menu-btn');
+    menuBtn.textContent = '⋮';
+    menuBtn.style.position = 'absolute';
+    menuBtn.style.top = '4px';
+    menuBtn.style.right = '8px';
+    menuBtn.style.cursor = 'pointer';
+    menuBtn.onclick = (e) => {
     e.stopPropagation();
     selectedMessageId = data._id;
     selectedMessageSender = data.sender;
     showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
   };
   message.appendChild(menuBtn);
+  message.style.position = 'relative'; // Required for absolute positioning inside it
+
 
   document.getElementById('messages').prepend(message);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
