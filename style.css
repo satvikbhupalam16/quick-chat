@@ -240,6 +240,8 @@ button:hover {
   padding: 5px;
   z-index: 1000;
   min-width: 140px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .delete-popup div {

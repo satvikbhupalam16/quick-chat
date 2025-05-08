@@ -176,6 +176,8 @@ function showClearChatMenu() {
   if (oldMenu) oldMenu.remove();
 
   const menu = document.createElement('div');
+  menu.style.position = 'absolute';
+  menu.style.zIndex = '1000';
   menu.id = 'clear-menu';
   menu.className = 'delete-popup';
   menu.style.top = '60px';
@@ -219,8 +221,15 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   const menu = document.createElement('div');
   menu.id = 'delete-menu';
   menu.className = 'delete-popup';
-  menu.style.top = `${y}px`;
-  menu.style.left = `${x}px`;
+  const popupWidth = 160; // match your popup CSS
+  const popupHeight = 120;
+  
+  const maxX = window.innerWidth - popupWidth - 10;
+  const maxY = window.innerHeight - popupHeight - 10;
+  
+  menu.style.left = `${Math.min(x, maxX)}px`;
+  menu.style.top = `${Math.min(y, maxY)}px`;
+  
 
   // ✅ 1. Reply Option
   const replyOption = document.createElement('div');
