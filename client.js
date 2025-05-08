@@ -87,6 +87,7 @@ document.getElementById('send-btn').addEventListener('click', () => {
 
     // ✅ Clear input and reply preview
     msgInput.value = '';
+    msgInput.focus();
     replyTo = null;
     document.getElementById('reply-preview').style.display = 'none';
     socket.emit('stopTyping', userName);
