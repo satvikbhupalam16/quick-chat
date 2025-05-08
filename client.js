@@ -314,54 +314,50 @@ function addMessageToDOM(data) {
   const messageText = formatMessageText(rawMessage);
   const timeText = data.time || '';
 
-  // Create the action icon
-const menuBtn = document.createElement('span');
-menuBtn.classList.add('message-menu-btn');
-menuBtn.textContent = '⋮';
-menuBtn.onclick = (e) => {
-  e.stopPropagation();
-  selectedMessageId = data._id;
-  selectedMessageSender = data.sender;
-  showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
-};
-message.appendChild(menuBtn);
-
-
-  const message = document.createElement('div');
+  const message = document.createElement('div'); // ✅ Now we define it
   message.classList.add('message', isUser ? 'user' : 'friend');
 
-  // ✅ Attach the MongoDB message ID to the DOM element
+  // ✅ Attach ID and contextmenu
   if (data._id) {
     message.setAttribute('data-id', data._id);
     message.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); // stop default right-click behavior
-    
+      e.preventDefault();
       selectedMessageId = data._id;
       selectedMessageSender = data.sender;
-    
       showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
     });
-    
   }
 
+  // ✅ Reply Preview
   let replyHtml = '';
-if (data.reply) {
-  replyHtml = `
-    <div class="reply-bubble">
-      <strong>${data.reply.sender}:</strong> ${data.reply.message}
-    </div>
-  `;
-}
+  if (data.reply) {
+    replyHtml = `
+      <div class="reply-bubble">
+        <strong>${data.reply.sender}:</strong> ${data.reply.message}
+      </div>
+    `;
+  }
 
-  // ✅ Set the message content
+  // ✅ Add message content
   message.innerHTML = `
-  ${replyHtml}
-  ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
-  ${messageText}
-  <div class="timestamp">${timeText}</div>
-`;
+    ${replyHtml}
+    ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
+    ${messageText}
+    <div class="timestamp">${timeText}</div>
+  `;
 
-  // ✅ Add the message to the chat DOM
+  // ✅ Now append the ⋮ menu button (after message is ready)
+  const menuBtn = document.createElement('span');
+  menuBtn.classList.add('message-menu-btn');
+  menuBtn.textContent = '⋮';
+  menuBtn.onclick = (e) => {
+    e.stopPropagation();
+    selectedMessageId = data._id;
+    selectedMessageSender = data.sender;
+    showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
+  };
+  message.appendChild(menuBtn);
+
   document.getElementById('messages').prepend(message);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 }
