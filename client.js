@@ -320,6 +320,7 @@ function addMessageToDOM(data) {
   // ✅ Attach ID and contextmenu
   if (data._id) {
     message.setAttribute('data-id', data._id);
+    message.setAttribute('id', `msg-${data._id}`);
     message.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       selectedMessageId = data._id;
@@ -330,9 +331,9 @@ function addMessageToDOM(data) {
 
   // ✅ Reply Preview
   let replyHtml = '';
-  if (data.reply) {
+  if (data.reply && data._id) {
     replyHtml = `
-      <div class="reply-bubble">
+      <div class="reply-bubble" data-source-id="${data.reply._id}" onclick="scrollToOriginal('${data.reply._id}')">
         <strong>${data.reply.sender}:</strong> ${data.reply.message}
       </div>
     `;
@@ -444,3 +445,15 @@ socket.on('otherUserStatus', ({ username, online, lastSeen }) => {
     <div class="status-info">${displayStatus}</div>
   `;
 });
+
+function scrollToOriginal(messageId) {
+  const target = document.getElementById(`msg-${messageId}`);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.add('flash');
+
+    setTimeout(() => {
+      target.classList.remove('flash');
+    }, 1000);
+  }
+}

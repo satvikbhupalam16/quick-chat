@@ -347,6 +347,15 @@ button:hover {
   background: #555;
 }
 
+.flash {
+  animation: flashHighlight 1s ease;
+}
+
+@keyframes flashHighlight {
+  0%   { background-color: yellow; }
+  100% { background-color: inherit; }
+}
+
 
 /* Optional: fade in animation */
 @keyframes fadeIn {
