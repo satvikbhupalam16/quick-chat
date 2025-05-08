@@ -244,19 +244,27 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   replyOption.textContent = 'Reply';
   replyOption.onclick = () => {
     const originalMsg = document.querySelector(`[data-id="${selectedMessageId}"]`);
-    const replyMsg = originalMsg?.textContent.trim().split('\n')[0] || '[No message]';
-
+    let msgBody = originalMsg?.cloneNode(true);
+    
+    // Remove elements like the sender label, menu button, and timestamp
+    if (msgBody) {
+      msgBody.querySelector('strong')?.remove();
+      msgBody.querySelector('.timestamp')?.remove();
+      msgBody.querySelector('.message-menu-btn')?.remove();
+    }
+    
+    const replyText = msgBody?.textContent.trim() || '[No message]';
+    
     replyTo = {
       sender: selectedMessageSender,
-      message: replyMsg,
-      _id: selectedMessageId  // 👈 ADD THIS LINE
-    };    
+      message: replyText,
+      _id: selectedMessageId
+    };
     
-
-    document.getElementById('reply-text').textContent = replyMsg;
+    document.getElementById('reply-text').textContent = replyText;
     document.getElementById('reply-preview').style.display = 'block';
-
     menu.remove();
+    
   };
   menu.appendChild(replyOption);
 
