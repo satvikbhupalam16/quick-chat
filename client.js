@@ -89,7 +89,8 @@ document.getElementById('send-btn').addEventListener('click', () => {
       time,
       reply: replyTo ? {
         sender: replyTo.sender,
-        message: replyTo.message
+        message: replyTo.message,
+        _id: replyTo._id
       } : null
     });
 
@@ -247,8 +248,10 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
 
     replyTo = {
       sender: selectedMessageSender,
-      message: replyMsg
-    };
+      message: replyMsg,
+      _id: selectedMessageId  // 👈 ADD THIS LINE
+    };    
+    
 
     document.getElementById('reply-text').textContent = replyMsg;
     document.getElementById('reply-preview').style.display = 'block';
