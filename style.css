@@ -351,6 +351,17 @@ button:hover {
   animation: flashHighlight 1s ease;
 }
 
+.reply-bubble {
+  background-color: #2a2a2a;
+  border-left: 3px solid #1a73e8;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+
 @keyframes flashHighlight {
   0%   { background-color: yellow; }
   100% { background-color: inherit; }
