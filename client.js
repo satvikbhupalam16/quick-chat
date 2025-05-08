@@ -314,6 +314,19 @@ function addMessageToDOM(data) {
   const messageText = formatMessageText(rawMessage);
   const timeText = data.time || '';
 
+  // Create the action icon
+const menuBtn = document.createElement('span');
+menuBtn.classList.add('message-menu-btn');
+menuBtn.textContent = '⋮';
+menuBtn.onclick = (e) => {
+  e.stopPropagation();
+  selectedMessageId = data._id;
+  selectedMessageSender = data.sender;
+  showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
+};
+message.appendChild(menuBtn);
+
+
   const message = document.createElement('div');
   message.classList.add('message', isUser ? 'user' : 'friend');
 

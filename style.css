@@ -209,6 +209,19 @@ button:hover {
   display: none;
 }
 
+.message-menu-btn {
+  float: right;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.message:hover .message-menu-btn {
+  color: #fff;
+}
+
+
 .message:hover .delete-btn {
   display: inline;
 }
