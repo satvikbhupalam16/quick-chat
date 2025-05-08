@@ -361,6 +361,26 @@ button:hover {
   color: #ccc;
 }
 
+.reply-preview {
+  background: #1e1e1e;
+  border-left: 3px solid #1a73e8;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: #bbb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.reply-preview button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 
 @keyframes flashHighlight {
   0%   { background-color: yellow; }
