@@ -225,10 +225,17 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   const popupHeight = 120;
   
   const maxX = window.innerWidth - popupWidth - 10;
-  const maxY = window.innerHeight - popupHeight - 10;
-  
+
+  let top = y;
+  const overflowY = y + popupHeight > window.innerHeight;
+
+  if (overflowY) {
+    top = y - popupHeight - 10; // position it above
+    if (top < 0) top = 10; // don’t go above viewport
+  }
+
   menu.style.left = `${Math.min(x, maxX)}px`;
-  menu.style.top = `${Math.min(y, maxY)}px`;
+  menu.style.top = `${top}px`;
   
 
   // ✅ 1. Reply Option
