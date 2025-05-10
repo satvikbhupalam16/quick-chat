@@ -89,7 +89,8 @@ document.getElementById('send-btn').addEventListener('click', () => {
       time,
       reply: replyTo ? {
         sender: replyTo.sender,
-        message: replyTo.message
+        message: replyTo.message,
+        _id: replyTo._id
       } : null
     });
 
@@ -243,17 +244,27 @@ function showDeleteMenu(x, y, canDeleteForEveryone) {
   replyOption.textContent = 'Reply';
   replyOption.onclick = () => {
     const originalMsg = document.querySelector(`[data-id="${selectedMessageId}"]`);
-    const replyMsg = originalMsg?.textContent.trim().split('\n')[0] || '[No message]';
-
+    let msgBody = originalMsg?.cloneNode(true);
+    
+    // Remove elements like the sender label, menu button, and timestamp
+    if (msgBody) {
+      msgBody.querySelector('strong')?.remove();
+      msgBody.querySelector('.timestamp')?.remove();
+      msgBody.querySelector('.message-menu-btn')?.remove();
+    }
+    
+    const replyText = msgBody?.textContent.trim() || '[No message]';
+    
     replyTo = {
       sender: selectedMessageSender,
-      message: replyMsg
+      message: replyText,
+      _id: selectedMessageId
     };
-
-    document.getElementById('reply-text').textContent = replyMsg;
+    
+    document.getElementById('reply-text').textContent = replyText;
     document.getElementById('reply-preview').style.display = 'block';
-
     menu.remove();
+    
   };
   menu.appendChild(replyOption);
 
@@ -314,41 +325,56 @@ function addMessageToDOM(data) {
   const messageText = formatMessageText(rawMessage);
   const timeText = data.time || '';
 
-  const message = document.createElement('div');
+  const message = document.createElement('div'); // ✅ Now we define it
   message.classList.add('message', isUser ? 'user' : 'friend');
 
-  // ✅ Attach the MongoDB message ID to the DOM element
+  // ✅ Attach ID and contextmenu
   if (data._id) {
     message.setAttribute('data-id', data._id);
+    message.setAttribute('id', `msg-${data._id}`);
     message.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); // stop default right-click behavior
-    
+      e.preventDefault();
       selectedMessageId = data._id;
       selectedMessageSender = data.sender;
-    
       showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
     });
-    
   }
 
+  // ✅ Reply Preview
   let replyHtml = '';
-if (data.reply) {
-  replyHtml = `
-    <div class="reply-bubble">
-      <strong>${data.reply.sender}:</strong> ${data.reply.message}
-    </div>
-  `;
-}
+  if (data.reply && data._id) {
+    replyHtml = `
+      <div class="reply-bubble" data-source-id="${data.reply._id}" onclick="scrollToOriginal('${data.reply._id}')">
+        <strong>${data.reply.sender}:</strong> ${data.reply.message}
+      </div>
+    `;
+  }
 
-  // ✅ Set the message content
+  // ✅ Add message content
   message.innerHTML = `
-  ${replyHtml}
-  ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
-  ${messageText}
-  <div class="timestamp">${timeText}</div>
-`;
+    ${replyHtml}
+    ${!isUser ? `<strong>${senderName}:</strong>` : '<strong>You:</strong>'}
+    ${messageText}
+    <div class="timestamp">${timeText}</div>
+  `;
+  
+    const menuBtn = document.createElement('span');
+    menuBtn.classList.add('message-menu-btn');
+    menuBtn.textContent = '⋮';
+    menuBtn.style.position = 'absolute';
+    menuBtn.style.top = '4px';
+    menuBtn.style.right = '8px';
+    menuBtn.style.cursor = 'pointer';
+    menuBtn.onclick = (e) => {
+    e.stopPropagation();
+    selectedMessageId = data._id;
+    selectedMessageSender = data.sender;
+    showDeleteMenu(e.pageX, e.pageY, data.sender === userName);
+  };
+  message.appendChild(menuBtn);
+  message.style.position = 'relative'; // Required for absolute positioning inside it
 
-  // ✅ Add the message to the chat DOM
+
   document.getElementById('messages').prepend(message);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 }
@@ -430,3 +456,15 @@ socket.on('otherUserStatus', ({ username, online, lastSeen }) => {
     <div class="status-info">${displayStatus}</div>
   `;
 });
+
+function scrollToOriginal(messageId) {
+  const target = document.getElementById(`msg-${messageId}`);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.add('flash');
+
+    setTimeout(() => {
+      target.classList.remove('flash');
+    }, 1000);
+  }
+}

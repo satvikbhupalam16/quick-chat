@@ -94,7 +94,8 @@ io.on('connection', (socket) => {
       const msg = new Message({
         sender: data.sender,
         message: data.msg,
-        time: data.time
+        time: data.time,
+        reply: data.reply
       });
       await msg.save();
       // Add _id to message so it can be tracked for deletion
