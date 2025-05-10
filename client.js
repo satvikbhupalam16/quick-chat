@@ -131,6 +131,10 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
+document.getElementById('notify-btn').addEventListener('click', () => {
+  socket.emit('send sms notify', { from: userName });
+});
+
 document.getElementById('goto-call').addEventListener('click', () => {
   const popup = document.createElement('div');
   popup.className = 'call-popup';

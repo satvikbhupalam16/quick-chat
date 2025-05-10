@@ -40,6 +40,7 @@
     <div class="chat-header">
       <div id="status-display" class="status-box"></div>
       <div class="chat-controls">
+        <!--<button id="notify-btn" title="Send Notification">🔔</button>-->
         <button id="goto-call" title="Call"><i class="fa fa-phone"></i></button>
         <button id="clear-btn" title="Clear"><i class="fa fa-trash-o"></i></button>
         <button id="back-btn" title="Back"><i class="fa fa-chevron-left"></i></button>
@@ -82,4 +83,12 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>
 </body>
+
+<script>
+  document.getElementById('notifyButton').addEventListener('click', () => {
+    fetch('/notify', { method: 'POST' })
+      .then(res => res.ok ? alert('Notification sent!') : alert('Failed'));
+  });
+</script>
+
 </html>

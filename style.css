@@ -381,6 +381,17 @@ button:hover {
   font-size: 16px;
 }
 
+#notify-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+#notify-btn:hover {
+  color: #007bff;
+}
+
 
 @keyframes flashHighlight {
   0%   { background-color: yellow; }
